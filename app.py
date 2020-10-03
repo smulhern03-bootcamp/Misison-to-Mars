@@ -21,7 +21,7 @@ def scrape():
    return "Scraping Successful!"
 
 mars.update({}, mars_data, upsert=True) 
-return "Scraping successful!"
+        return "Scraping successful!"
 
 if __name__ == "__main__":
    app.run()

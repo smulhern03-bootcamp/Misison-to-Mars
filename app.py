@@ -1,5 +1,5 @@
 from flask import Flask, render_template
-from flask_pymongo import PyMongo
+from Flask-PyMongo import PyMongo
 import scraping
 
 app = Flask(__name__)
@@ -19,9 +19,6 @@ def scrape():
    mars_data = scraping.scrape_all()
    mars.update({}, mars_data, upsert=True)
    return "Scraping Successful!"
-
-mars.update({}, mars_data, upsert=True) 
-        return "Scraping successful!"
 
 if __name__ == "__main__":
    app.run()

@@ -16,8 +16,7 @@ def scrape_all():
         "news_title": news_title,
         "news_paragraph": news_paragraph,
         "featured_image": featured_image(browser),
-        "facts": mars_facts(),
-        "last_modified": dt.datetime.now()
+        "hemisphere": hemisphere_image_urls
     }
 
     # Stop webdriver and return data
@@ -85,20 +84,65 @@ def featured_image(browser):
     return img_url
 
 def mars_facts():
-    # Add try/except for error handling
-    try:
-        # Use 'read_html' to scrape the facts table into a dataframe
-        df = pd.read_html('http://space-facts.com/mars/')[0]
+# 1. Use browser to visit the URL 
+    url = 'https://astrogeology.usgs.gov/search/results?q=hemisphere+enhanced&k1=target&v1=Mars'
+    browser.visit(url)
 
-    except BaseException:
-        return None
+    hemisphere_image_urls = []
+#Cerberus
+    browser.links.find_by_partial_text('Cerberus').click()
+    html = browser.html
+    cerberus_soup = soup(html, 'html.parser')
+    cerberus_url = cerberus_soup.select_one('div.downloads a').get("href")
+    cerberus_title = cerberus_soup.select_one('div.content h2').text
+#dictionary:
+    cerberus_dict = {
+        "img_url": cerberus_url,
+        "title": cerberus_title
+    }
+    hemisphere_image_urls.append(cerberus_dict)
 
-    # Assign columns and set index of dataframe
-    df.columns=['Description', 'Mars']
-    df.set_index('Description', inplace=True)
+#schiaparelli
+    browser.visit(url)
+    browser.links.find_by_partial_text('Schiaparelli').click()
+    html = browser.html
+    schiaparelli_soup = soup(html, 'html.parser')
+    schiaparelli_url = schiaparelli_soup.select_one('div.downloads a').get("href")
+    schiaparelli_title = schiaparelli_soup.select_one('div.content h2').text
+#dictionary:
+    schiaparelli_dict = {
+        "img_url": schiaparelli_url,
+        "title": schiaparelli_title
+    }
+    hemisphere_image_urls.append(schiaparelli_dict)
 
-    # Convert dataframe into HTML format, add bootstrap
-    return df.to_html(classes="table table-striped")
+#syrtis
+    browser.visit(url)
+    browser.links.find_by_partial_text('Syrtis').click()
+    html = browser.html
+    syrtis_soup = soup(html, 'html.parser')
+    syrtis_url = syrtis_soup.select_one('div.downloads a').get("href")
+    syrtis_title = syrtis_soup.select_one('div.content h2').text
+#dictionary:
+    syrtis_dict = {
+        "img_url": syrtis_url,
+        "title": syrtis_title
+    }
+    hemisphere_image_urls.append(syrtis_dict)
+
+#valles_marineris
+    browser.visit(url)
+    browser.links.find_by_partial_text('Valles Marineris').click()
+    html = browser.html
+    valles_marineris_soup = soup(html, 'html.parser')
+    valles_marineris_url = valles_marineris_soup.select_one('div.downloads a').get("href")
+    valles_marineris_title = valles_marineris_soup.select_one('div.content h2').text
+#dictionary:
+    valles_marineris_dict = {
+        "img_url": valles_marineris_url,
+        "title": valles_marineris_title
+    }
+    hemisphere_image_urls.append(valles_marineris_dict)
 
 if __name__ == "__main__":
 

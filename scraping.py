@@ -13,10 +13,12 @@ def scrape_all():
 
     # Run all scraping functions and store results in a dictionary
     data = {
-        "news_title": news_title,
-        "news_paragraph": news_paragraph,
-        "featured_image": featured_image(browser),
-        "hemisphere": hemisphere_image_urls
+      "news_title": news_title,
+      "news_paragraph": news_paragraph,
+      "featured_image": featured_image(browser),
+      "facts": mars_facts(),
+      "last_modified": dt.datetime.now(),
+      "hemispheres": mars_hemis(browser)
     }
 
     # Stop webdriver and return data
@@ -58,7 +60,7 @@ def featured_image(browser):
     browser.visit(url)
 
     # Find and click the full image button
-    full_image_elem = browser.find_by_id('full_image')[0]
+    full_image_elem = browser.find_by_id('full_image')
     full_image_elem.click()
 
     # Find the more info button and click that
@@ -84,7 +86,23 @@ def featured_image(browser):
     return img_url
 
 def mars_facts():
-# 1. Use browser to visit the URL 
+    # Add try/except for error handling
+    try:
+        # Use 'read_html' to scrape the facts table into a dataframe
+        df = pd.read_html('http://space-facts.com/mars/')
+
+    except BaseException:
+        return None
+
+    # Assign columns and set index of dataframe
+    df.columns=['Description', 'Mars']
+    df.set_index('Description', inplace=True)
+
+    # Convert dataframe into HTML format, add bootstrap
+    return df.to_html(classes="table table-striped")
+
+def mars_hemis(browser):
+# 1. Use browser to visit the URL   
     url = 'https://astrogeology.usgs.gov/search/results?q=hemisphere+enhanced&k1=target&v1=Mars'
     browser.visit(url)
 
@@ -144,7 +162,8 @@ def mars_facts():
     }
     hemisphere_image_urls.append(valles_marineris_dict)
 
-if __name__ == "__main__":
+    return hemisphere_image_urls
 
+if __name__ == "__main__":
     # If running as script, print scraped data
     print(scrape_all())
